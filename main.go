@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"flag"
 	"fmt"
+	"github.com/kingstenzzz/Turbo/net"
 	"io"
 	"log"
 	mrand "math/rand"
@@ -42,7 +43,7 @@ func main() {
 		r = rand.Reader
 	}
 
-	h, err := network.makeHost(*sourcePort, r)
+	h, err := net.makeHost(*sourcePort, r)
 	if err != nil {
 		log.Println(err)
 		return
