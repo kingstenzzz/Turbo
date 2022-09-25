@@ -1,3 +1,3 @@
-module github.com/kingstenzzz/Turbo/peer
+module github.com/kingstenzzz/Turbo
 
 go 1.18
