@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"crypto/rand"
 	"flag"
 	"fmt"
 	"github.com/kingstenzzz/Turbo/net"
@@ -39,30 +38,37 @@ func main() {
 		// This will always generate the same host ID on multiple executions, if the same port number is used.
 		// Never do this in production code.
 		r = mrand.New(mrand.NewSource(int64(*sourcePort)))
+		fmt.Println(r)
 	} else {
-		r = rand.Reader
+		r = mrand.New(mrand.NewSource(int64(*sourcePort)))
 	}
 
-	h, err := net.makeHost(*sourcePort, r)
+	h, err := net.MakeHost(*sourcePort, r)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	if *dest == "" {
-		startPeer(ctx, h, handleStream)
-	} else {
-		rw, err := startPeerAndConnect(ctx, h, *dest)
+	//if *dest == "" {
+	net.StartPeer(ctx, h, net.HandleStream)
+
+	//} else {
+	if *dest != " " {
+		rw1, err := net.StartPeerAndConnect(ctx, h, *dest)
 		if err != nil {
 			log.Println(err)
 			return
 		}
-
-		// Create a thread to read and write data.
-		go writeData(rw)
-		go readData(rw)
-
+		go net.WriteData(rw1)
+		go net.ReadData(rw1)
 	}
+
+	//	}
+
+	// Create a thread to read and write data.
+
+	//		go net.WriteData(rw2)
+	//		go net.ReadData(rw2)
 
 	// Wait forever
 	select {}

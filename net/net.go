@@ -18,19 +18,19 @@ import (
 	"github.com/multiformats/go-multiaddr"
 )
 
-func handleStream(s network.Stream) {
+func HandleStream(s network.Stream) {
 	log.Println("Got a new stream!")
 
 	// Create a buffer stream for non blocking read and write.
 	rw := bufio.NewReadWriter(bufio.NewReader(s), bufio.NewWriter(s))
 
-	go readData(rw)
-	go writeData(rw)
+	go ReadData(rw)
+	go WriteData(rw)
 
 	// stream 's' will stay open until you close it (or the other side closes it).
 }
 
-func readData(rw *bufio.ReadWriter) {
+func ReadData(rw *bufio.ReadWriter) {
 	for {
 		str, _ := rw.ReadString('\n')
 
@@ -46,7 +46,7 @@ func readData(rw *bufio.ReadWriter) {
 	}
 }
 
-func writeData(rw *bufio.ReadWriter) {
+func WriteData(rw *bufio.ReadWriter) {
 	stdReader := bufio.NewReader(os.Stdin)
 
 	for {
@@ -62,7 +62,7 @@ func writeData(rw *bufio.ReadWriter) {
 	}
 }
 
-func makeHost(port int, randomness io.Reader) (host.Host, error) {
+func MakeHost(port int, randomness io.Reader) (host.Host, error) {
 	// Creates a new RSA key pair for this host.
 	prvKey, _, err := crypto.GenerateKeyPairWithReader(crypto.RSA, 2048, randomness)
 	if err != nil {
@@ -81,7 +81,7 @@ func makeHost(port int, randomness io.Reader) (host.Host, error) {
 	)
 }
 
-func startPeer(ctx context.Context, h host.Host, streamHandler network.StreamHandler) {
+func StartPeer(ctx context.Context, h host.Host, streamHandler network.StreamHandler) {
 	// Set a function as stream handler.
 	// This function is called when a peer connects, and starts a stream with this protocol.
 	// Only applies on the receiving side.
@@ -107,7 +107,7 @@ func startPeer(ctx context.Context, h host.Host, streamHandler network.StreamHan
 	log.Println()
 }
 
-func startPeerAndConnect(ctx context.Context, h host.Host, destination string) (*bufio.ReadWriter, error) {
+func StartPeerAndConnect(ctx context.Context, h host.Host, destination string) (*bufio.ReadWriter, error) {
 	log.Println("This node's multiaddresses:")
 	for _, la := range h.Addrs() {
 		log.Printf(" - %v\n", la)
@@ -145,4 +145,5 @@ func startPeerAndConnect(ctx context.Context, h host.Host, destination string) (
 	rw := bufio.NewReadWriter(bufio.NewReader(s), bufio.NewWriter(s))
 
 	return rw, nil
+
 }
